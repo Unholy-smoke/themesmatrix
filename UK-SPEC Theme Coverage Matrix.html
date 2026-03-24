@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>UK-SPEC v4 Theme Coverage Matrix | SR2026</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+    background: #f5f7fa;
+    color: #1a1a2e;
+  }
+
+  /* ===== DESKTOP LAYOUT ===== */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    color: #1F4E79;
+    margin-bottom: 0.2rem;
+    font-weight: 700;
+  }
+
+  .subtitle {
+    font-size: 0.92rem;
+    color: #666;
+    margin-bottom: 1.4rem;
+    line-height: 1.4;
+  }
+
+  .device-hint-desktop { display: block; }
+  .device-hint-mobile { display: none; }
+
+  /* ===== DESKTOP TABLE ===== */
+  .matrix-wrapper {
+    overflow-x: auto;
+  }
+
+  table {
+    border-collapse: separate;
+    border-spacing: 3px;
+    width: 100%;
+    min-width: 780px;
+  }
+
+  th {
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.55rem 0.4rem;
+    text-align: center;
+    vertical-align: bottom;
+    color: #1F4E79;
+    background: #D6E4F0;
+    border-radius: 4px 4px 0 0;
+    line-height: 1.3;
+  }
+
+  th.section-header { width: 14%; }
+  th.theme-col {
+    width: 18%;
+    text-align: right;
+    padding-right: 0.8rem;
+    background: transparent;
+  }
+
+  .theme-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #333;
+    text-align: right;
+    padding: 0.5rem 0.7rem;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  td.cell {
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.5rem 0.3rem;
+    border-radius: 3px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  td.cell:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 10;
+  }
+
+  td.explicit { background: #1F4E79; color: #fff; }
+  td.oblique  { background: #5B9BD5; color: #fff; }
+  td.absent   { background: #E8EDF2; color: #999; }
+
+  /* Desktop tooltip (hover) */
+  td.cell .tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a2e;
+    color: #f0f0f0;
+    padding: 0.65rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 400;
+    line-height: 1.45;
+    width: 310px;
+    text-align: left;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  td.cell .tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1a1a2e;
+  }
+
+  /* Flip tooltip below for top rows */
+  tr:nth-child(-n+3) td.cell .tooltip {
+    bottom: auto;
+    top: calc(100% + 8px);
+  }
+  tr:nth-child(-n+3) td.cell .tooltip::after {
+    top: auto;
+    bottom: 100%;
+    border-top-color: transparent;
+    border-bottom-color: #1a1a2e;
+  }
+
+  /* Edge-aware tooltips */
+  td.cell:nth-of-type(2) .tooltip,
+  td.cell:nth-of-type(3) .tooltip {
+    left: 0; transform: translateX(0);
+  }
+  td.cell:nth-of-type(2) .tooltip::after,
+  td.cell:nth-of-type(3) .tooltip::after {
+    left: 1.5rem; transform: none;
+  }
+  td.cell:nth-last-of-type(1) .tooltip,
+  td.cell:nth-last-of-type(2) .tooltip {
+    left: auto; right: 0; transform: translateX(0);
+  }
+  td.cell:nth-last-of-type(1) .tooltip::after,
+  td.cell:nth-last-of-type(2) .tooltip::after {
+    left: auto; right: 1.5rem; transform: none;
+  }
+
+  /* Desktop: show tooltip on hover */
+  @media (hover: hover) {
+    td.cell:hover .tooltip { display: block; }
+  }
+
+  .tooltip .note-label {
+    color: #93c5fd;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.2rem;
+  }
+
+  .tooltip .note-text em {
+    color: #fbbf24;
+    font-style: normal;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+    margin-top: 1rem;
+    font-size: 0.82rem;
+    color: #666;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .legend-swatch {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .insight-box {
+    margin-top: 1rem;
+    background: #D6E4F0;
+    padding: 0.85rem 1.1rem;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    color: #333;
+    line-height: 1.5;
+  }
+
+  .insight-box strong { color: #1F4E79; }
+
+  .footer {
+    margin-top: 1.2rem;
+    font-size: 0.75rem;
+    color: #999;
+    text-align: center;
+  }
+
+  /* ===== MOBILE DETAIL PANEL ===== */
+  .detail-panel {
+    display: none;
+    background: #1a1a2e;
+    color: #f0f0f0;
+    padding: 0.9rem 1rem;
+    border-radius: 8px;
+    margin: 0.6rem 0;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    animation: slideDown 0.2s ease-out;
+  }
+
+  .detail-panel.visible { display: block; }
+
+  .detail-panel .dp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+  }
+
+  .detail-panel .dp-theme {
+    font-weight: 700;
+    color: #93c5fd;
+    font-size: 0.82rem;
+  }
+
+  .detail-panel .dp-section {
+    font-weight: 600;
+    color: #93c5fd;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .detail-panel .dp-status {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+
+  .detail-panel .dp-status.explicit { background: #1F4E79; color: #fff; }
+  .detail-panel .dp-status.oblique  { background: #5B9BD5; color: #fff; }
+  .detail-panel .dp-status.absent   { background: #E8EDF2; color: #666; }
+
+  .detail-panel .dp-text {
+    font-weight: 400;
+  }
+
+  .detail-panel .dp-text em {
+    color: #fbbf24;
+    font-style: normal;
+  }
+
+  .detail-panel .dp-close {
+    background: none;
+    border: 1px solid #555;
+    color: #aaa;
+    border-radius: 4px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.78rem;
+    cursor: pointer;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== MOBILE CARD LAYOUT ===== */
+  .mobile-cards { display: none; }
+
+  @media (max-width: 768px) {
+    body { padding: 0; }
+
+    .container { padding: 1rem; }
+
+    h1 { font-size: 1.25rem; }
+
+    .subtitle { font-size: 0.85rem; margin-bottom: 1rem; }
+
+    .device-hint-desktop { display: none; }
+    .device-hint-mobile { display: block; }
+
+    /* Hide desktop table */
+    .matrix-wrapper { display: none; }
+
+    /* Show mobile cards */
+    .mobile-cards { display: block; }
+
+    .theme-card {
+      margin-bottom: 0.8rem;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    .theme-card-header {
+      padding: 0.65rem 0.8rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #1F4E79;
+      background: #eef3f9;
+      border-bottom: 1px solid #dce6f0;
+    }
+
+    .theme-card-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 3px;
+      padding: 0.4rem;
+    }
+
+    .mc-cell {
+      text-align: center;
+      padding: 0.5rem 0.2rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.1s;
+    }
+
+    .mc-cell:active { transform: scale(0.95); }
+
+    .mc-cell.explicit { background: #1F4E79; color: #fff; }
+    .mc-cell.oblique  { background: #5B9BD5; color: #fff; }
+    .mc-cell.absent   { background: #E8EDF2; color: #999; }
+
+    .mc-cell .mc-section {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      opacity: 0.8;
+      margin-bottom: 0.15rem;
+    }
+
+    .legend {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .insight-box { font-size: 0.85rem; }
+  }
+
+  @media print {
+    body { padding: 0.5rem; background: #fff; }
+    td.cell .tooltip { display: none !important; }
+    td.cell:hover { transform: none; box-shadow: none; }
+    .detail-panel { display: none !important; }
+    .mobile-cards { display: none; }
+    .matrix-wrapper { display: block; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Where do these themes appear in UK-SPEC v4?</h1>
+  <p class="subtitle">
+    <span class="device-hint-desktop">2025 workshop themes mapped against the actual competence wording across all four registration categories. Hover over any cell for detail.</span>
+    <span class="device-hint-mobile">2025 workshop themes mapped against UK-SPEC v4 competence wording. Tap any cell for detail.</span>
+  </p>
+
+  <!-- ===== DESKTOP TABLE ===== -->
+  <div class="matrix-wrapper">
+    <table id="matrix-table">
+      <thead>
+        <tr>
+          <th class="theme-col"></th>
+          <th class="section-header">A<br>Knowledge &amp;<br>understanding</th>
+          <th class="section-header">B<br>Design &amp;<br>solving problems</th>
+          <th class="section-header">C<br>Responsibility &amp;<br>management</th>
+          <th class="section-header">D<br>Communication &amp;<br>interpersonal</th>
+          <th class="section-header">E<br>Personal &amp;<br>commitment</th>
+        </tr>
+      </thead>
+      <tbody id="matrix-body"></tbody>
+    </table>
+  </div>
+
+  <!-- Desktop detail panel (below table, for tap on touch-laptops) -->
+  <div id="detail-panel-desktop" class="detail-panel"></div>
+
+  <!-- ===== MOBILE CARD LAYOUT ===== -->
+  <div class="mobile-cards" id="mobile-cards"></div>
+
+  <!-- Mobile detail panel -->
+  <div id="detail-panel-mobile" class="detail-panel"></div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-swatch" style="background:#1F4E79"></span> Explicit &ndash; named in the competence wording</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#5B9BD5"></span> Oblique &ndash; related language appears but doesn&rsquo;t name the concept</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#E8EDF2; border:1px solid #ccc"></span> Absent &ndash; not referenced</div>
+  </div>
+
+  <div class="insight-box">
+    <strong>Key observation:</strong> Sustainability, safety, and ethics each appear explicitly in just one section (E). Resilience, systems thinking, innovation, and human focus are absent from the competence wording entirely. Several themes present in EngTech/ICTTech B (safety, security, environmental impact) disappear at IEng and CEng level. Workshop participants consistently called for cross-cutting themes to be <strong>&ldquo;threaded&rdquo; across all sections, not siloed or buried</strong>.
+  </div>
+
+  <div class="footer">
+    Engineering Council &middot; Standards Review 2026 &middot; Based on analysis of UK-SPEC v4 competence statements across EngTech, IEng, CEng, and ICTTech
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const sections = [
+  { id: "A", label: "A" },
+  { id: "B", label: "B" },
+  { id: "C", label: "C" },
+  { id: "D", label: "D" },
+  { id: "E", label: "E" },
+];
+
+const data = [
+  {
+    theme: "Sustainability",
+    cells: [
+      { status: "absent",   note: "No mention of sustainability, environment, or sustainable development in any tier\u2019s A competences." },
+      { status: "oblique",  note: "EngTech B2: <em>\u201Cconsideration for cost, quality, safety, security and environmental impact\u201D</em>. ICTTech B2 similarly. But IEng and CEng B: nothing. \u201CEnvironmental impact\u201D appears only in the two lower tiers, and is one item in a list \u2013 not sustainability as such." },
+      { status: "absent",   note: "Nothing across any tier." },
+      { status: "absent",   note: "Nothing across any tier." },
+      { status: "explicit", note: "<em>E3 all tiers: \u201CUnderstand the principles of sustainable development and apply them in their work.\u201D</em> E header also references \u201Cthe environment\u201D. This is sustainability\u2019s sole home in UK-SPEC." },
+    ]
+  },
+  {
+    theme: "Regenerative practice",
+    cells: [
+      { status: "absent",  note: "Nothing. The word \u201Cregeneration\u201D or \u201Cregenerative\u201D does not appear anywhere in UK-SPEC." },
+      { status: "oblique", note: "IEng B header: <em>\u201Cdecommission and recycle\u201D</em>. EngTech B header: <em>\u201Cdecommissioning\u201D</em>. These are the nearest thing \u2013 lifecycle verbs \u2013 but \u201Cregeneration\u201D as a concept is absent." },
+      { status: "absent",  note: "Nothing." },
+      { status: "absent",  note: "Nothing." },
+      { status: "absent",  note: "Nothing specific. E3\u2019s \u201Csustainable development\u201D does not extend to regenerative practice." },
+    ]
+  },
+  {
+    theme: "Safety",
+    cells: [
+      { status: "absent",   note: "Nothing across any tier." },
+      { status: "oblique",  note: "EngTech B2: <em>\u201Cconsideration for\u2026 safety, security\u201D</em>. ICTTech B2: <em>\u201Chealth, safety\u201D</em>. But IEng and CEng B: nothing. Safety disappears from the B competences at the higher tiers." },
+      { status: "absent",   note: "Nothing across any tier." },
+      { status: "absent",   note: "Nothing." },
+      { status: "explicit", note: "<em>E2 all tiers: \u201CUnderstand the safety implications of their role and [manage/apply and improve] safe systems of work.\u201D</em> ICTTech E2 also covers hazard identification and risk management." },
+    ]
+  },
+  {
+    theme: "Security",
+    cells: [
+      { status: "absent",  note: "Nothing." },
+      { status: "oblique", note: "EngTech B2: <em>\u201Csafety, security\u201D</em> \u2013 explicit word. ICTTech B2: <em>\u201Cconfidentiality, security\u201D</em> plus <em>\u201CSecure and protect ICT systems from intrusion, damage, attack or data loss.\u201D</em> But IEng and CEng B: nothing. Security is absent from the higher tiers\u2019 B competences." },
+      { status: "absent",  note: "Nothing." },
+      { status: "absent",  note: "Nothing." },
+      { status: "oblique", note: "ICTTech E2 only: <em>\u201Chealthy, safe, secure systems\u201D</em>. The other three tiers say <em>\u201Csafe systems of work\u201D</em> without \u201Csecure\u201D. Security in E is ICTTech-specific." },
+    ]
+  },
+  {
+    theme: "Resilience",
+    cells: [
+      { status: "absent", note: "\u201CResilience\u201D or \u201Cresilient\u201D does not appear anywhere in UK-SPEC v4." },
+      { status: "absent", note: "Nothing. No concept of recovery from shock, adaptive capacity, or system resilience." },
+      { status: "absent", note: "Nothing." },
+      { status: "absent", note: "Nothing." },
+      { status: "absent", note: "Completely absent across all tiers and all sections." },
+    ]
+  },
+  {
+    theme: "Systems thinking",
+    cells: [
+      { status: "absent", note: "CEng A header: <em>\u201Cadvanced and complex systems\u201D</em>. ICTTech A header: <em>\u201Csystems skills\u201D</em>. But \u201Csystems\u201D here is a noun \u2013 things you work on \u2013 not systems thinking as an approach to understanding interdependencies or emergent behaviour." },
+      { status: "absent", note: "\u201CSystems\u201D appears frequently as an object: <em>\u201Cproducts, equipment, processes, systems or services\u201D</em>. But systems thinking as a discipline or approach is not referenced. No requirement to consider interdependencies, feedback loops, or whole-system views." },
+      { status: "absent", note: "Nothing." },
+      { status: "absent", note: "Nothing." },
+      { status: "absent", note: "Nothing." },
+    ]
+  },
+  {
+    theme: "Critical thinking",
+    cells: [
+      { status: "oblique", note: "IEng A2: <em>\u201Csound evidence-based approach to problem-solving\u201D</em>. ICTTech A1: <em>\u201Canalytical and systematic approach\u201D</em>. CEng A2: <em>\u201Cunusual or challenging problems\u201D</em>. Problem-solving and analytical language is present, but \u201Ccritical thinking\u201D as a named concept is absent." },
+      { status: "oblique", note: "Problem-solving runs through B across all tiers. But the focus is on doing (identify, design, implement, evaluate) not on the quality of reasoning or judgement that underpins it. The metacognitive skill is not named." },
+      { status: "absent",  note: "Nothing. No reference to reasoning, judgement, or critical evaluation in management decisions." },
+      { status: "oblique", note: "IEng/CEng D2: <em>\u201Cclearly present and discuss proposals, justifications and conclusions\u201D</em>. This implies reasoning has happened but doesn\u2019t require or name critical thinking itself." },
+      { status: "absent",  note: "\u201CCritical thinking\u201D, \u201Cjudgement\u201D, and \u201Creasoning\u201D do not appear as terms anywhere in Section E." },
+    ]
+  },
+  {
+    theme: "Ethics",
+    cells: [
+      { status: "absent",   note: "Nothing." },
+      { status: "absent",   note: "Nothing. Ethics is not referenced in the framing of design decisions at any tier." },
+      { status: "oblique",  note: "EngTech C1: <em>\u201Cappropriate codes of practice\u201D</em>. ICTTech C1: <em>\u201Cbest practice\u201D</em>. These could include ethical codes but are about technical/professional practice standards, not ethical reasoning." },
+      { status: "absent",   note: "Nothing. Ethics does not appear in the communication or interpersonal skills section." },
+      { status: "explicit", note: "<em>E5 all tiers: \u201CUnderstand the ethical issues that may arise in their role and carry out their responsibilities in an ethical manner.\u201D</em> E1 also covers codes of conduct. E header: <em>\u201Cobligations to society, the profession and the environment.\u201D</em>" },
+    ]
+  },
+  {
+    theme: "Inclusion",
+    cells: [
+      { status: "absent",   note: "Nothing." },
+      { status: "absent",   note: "Nothing. No mention of inclusive design, diverse user needs, or accessibility." },
+      { status: "absent",   note: "Nothing." },
+      { status: "explicit", note: "<em>D3 all tiers: \u201CDemonstrate personal and social skills and awareness of diversity and inclusion issues.\u201D</em> ICTTech D3 adds: <em>\u201CBe aware of the needs and concerns of others.\u201D</em> Framed as an interpersonal skill, not a design lens." },
+      { status: "absent",   note: "E header mentions \u201Cobligations to society\u201D which could broadly encompass inclusion, but it\u2019s a stretch. Not named." },
+    ]
+  },
+  {
+    theme: "Innovation",
+    cells: [
+      { status: "oblique", note: "IEng A header: <em>\u201Capply existing and emerging technology\u201D</em>. \u201CEmerging\u201D hints at innovation but doesn\u2019t name it. One tier only \u2013 absent from EngTech, CEng, and ICTTech A." },
+      { status: "absent",  note: "\u201CDevelopment\u201D appears throughout but means developing solutions, not innovating. The word \u201Cinnovation\u201D or \u201Cinnovative\u201D does not appear anywhere in UK-SPEC v4." },
+      { status: "oblique", note: "IEng/CEng C4: <em>\u201Ccontinuous quality improvement\u201D</em> / <em>\u201Cpromote best practice\u201D</em>. Improvement is not the same as innovation." },
+      { status: "absent",  note: "Nothing." },
+      { status: "absent",  note: "Nothing." },
+    ]
+  },
+  {
+    theme: "Engineering management",
+    cells: [
+      { status: "absent",   note: "Nothing." },
+      { status: "absent",   note: "Nothing specific to management as a discipline." },
+      { status: "explicit", note: "<em>IEng header: \u201Cprovide technical and commercial management.\u201D</em> <em>CEng header: \u201Cprovide technical and commercial leadership.\u201D</em> C1\u2013C4 at IEng/CEng cover planning, organising, managing teams, quality improvement. Note: EngTech/ICTTech C is framed as \u201Cpersonal responsibility\u201D not management \u2013 a meaningful tier distinction." },
+      { status: "absent",   note: "Nothing." },
+      { status: "absent",   note: "Nothing." },
+    ]
+  },
+  {
+    theme: "Human focus",
+    cells: [
+      { status: "absent", note: "Nothing." },
+      { status: "absent", note: "No mention of users, human factors, ergonomics, human-centred design, or people affected by engineering outputs in any tier\u2019s design competences." },
+      { status: "absent", note: "Nothing relevant. Team management references in C3 are about managing people, not designing for people." },
+      { status: "absent", note: "Nothing relevant to human-centred design. D\u2019s interpersonal skills are about working with colleagues and clients, not about the humans affected by engineering decisions." },
+      { status: "absent", note: "\u201CObligations to society\u201D in the E header is broad but does not reference human factors, user needs, or human-centred practice." },
+    ]
+  },
+];
+
+const statusLabels = { explicit: "Explicit", oblique: "Oblique", absent: "Absent" };
+
+// ===== BUILD DESKTOP TABLE =====
+const tbody = document.getElementById("matrix-body");
+data.forEach((row, ri) => {
+  const tr = document.createElement("tr");
+  const themeCell = document.createElement("td");
+  themeCell.className = "theme-label";
+  themeCell.textContent = row.theme;
+  tr.appendChild(themeCell);
+
+  row.cells.forEach((cell, ci) => {
+    const td = document.createElement("td");
+    td.className = `cell ${cell.status}`;
+    td.textContent = statusLabels[cell.status];
+    td.dataset.row = ri;
+    td.dataset.col = ci;
+
+    // Tooltip for desktop hover
+    const tooltip = document.createElement("div");
+    tooltip.className = "tooltip";
+    tooltip.innerHTML = `<div class="note-label">Section ${sections[ci].id}</div><div class="note-text">${cell.note}</div>`;
+    td.appendChild(tooltip);
+
+    // Click/tap handler for detail panel
+    td.addEventListener("click", (e) => {
+      e.stopPropagation();
+      showDetail(ri, ci, "desktop");
+    });
+
+    tr.appendChild(td);
+  });
+
+  tbody.appendChild(tr);
+});
+
+// ===== BUILD MOBILE CARDS =====
+const mobileContainer = document.getElementById("mobile-cards");
+data.forEach((row, ri) => {
+  const card = document.createElement("div");
+  card.className = "theme-card";
+
+  const header = document.createElement("div");
+  header.className = "theme-card-header";
+  header.textContent = row.theme;
+  card.appendChild(header);
+
+  const grid = document.createElement("div");
+  grid.className = "theme-card-grid";
+
+  row.cells.forEach((cell, ci) => {
+    const mc = document.createElement("div");
+    mc.className = `mc-cell ${cell.status}`;
+    mc.dataset.row = ri;
+    mc.dataset.col = ci;
+    mc.innerHTML = `<span class="mc-section">${sections[ci].id}</span>${statusLabels[cell.status]}`;
+    mc.addEventListener("click", (e) => {
+      e.stopPropagation();
+      showDetail(ri, ci, "mobile");
+    });
+    grid.appendChild(mc);
+  });
+
+  card.appendChild(grid);
+  mobileContainer.appendChild(card);
+});
+
+// ===== DETAIL PANEL LOGIC =====
+let activePanel = null;
+
+function showDetail(ri, ci, mode) {
+  const row = data[ri];
+  const cell = row.cells[ci];
+  const panelId = mode === "mobile" ? "detail-panel-mobile" : "detail-panel-desktop";
+  const panel = document.getElementById(panelId);
+
+  // Toggle off if same cell tapped again
+  if (activePanel === `${ri}-${ci}-${mode}`) {
+    panel.classList.remove("visible");
+    panel.innerHTML = "";
+    activePanel = null;
+    return;
+  }
+
+  panel.innerHTML = `
+    <div class="dp-header">
+      <div>
+        <span class="dp-theme">${row.theme}</span>
+        <span class="dp-section"> &middot; Section ${sections[ci].id}</span>
+      </div>
+      <button class="dp-close" onclick="closePanel('${panelId}')">&times; Close</button>
+    </div>
+    <span class="dp-status ${cell.status}">${statusLabels[cell.status]}</span>
+    <div class="dp-text">${cell.note}</div>
+  `;
+
+  panel.classList.add("visible");
+  activePanel = `${ri}-${ci}-${mode}`;
+
+  // Scroll panel into view on mobile
+  if (mode === "mobile") {
+    setTimeout(() => panel.scrollIntoView({ behavior: "smooth", block: "nearest" }), 100);
+  }
+}
+
+function closePanel(panelId) {
+  const panel = document.getElementById(panelId);
+  panel.classList.remove("visible");
+  panel.innerHTML = "";
+  activePanel = null;
+}
+
+// Close panel when tapping outside
+document.addEventListener("click", () => {
+  document.querySelectorAll(".detail-panel").forEach(p => {
+    p.classList.remove("visible");
+    p.innerHTML = "";
+  });
+  activePanel = null;
+});
+</script>
+</body>
+</html>
